@@ -1,6 +1,6 @@
 {
   "name": "dspdavscp",
-  "displayName": "dspdavscp",
+  "displayName": "DSPDAVSCP",
   "description": "Distributed Similar Project Data Analysis Visual Studio Code Plugin",
   "version": "0.0.1",
   "engines": {
@@ -9,7 +9,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
@@ -17,7 +19,33 @@
         "command": "dspdavscp.helloWorld",
         "title": "Hello World"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "DSPDAVSCP",
+      "properties": {
+        "dspdavscp.remoteHost": {
+          "type": "string",
+          "scope": "machine",
+          "default": "",
+          "description": "DSPDAVSCP remote host"
+        },
+        "dspdavscp.reportTimer": {
+          "type": "number",
+          "scope": "window",
+          "default": 900,
+          "description": "Report submission timeout (in seconds)"
+        },
+        "dspdavscp.projectPath": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "scope": "resource",
+          "default": [],
+          "description": "Project source directories to track"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
@@ -31,17 +59,20 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.95.0",
     "@types/mocha": "^10.0.9",
     "@types/node": "20.x",
+    "@types/vscode": "^1.95.0",
     "@typescript-eslint/eslint-plugin": "^8.10.0",
     "@typescript-eslint/parser": "^8.7.0",
-    "eslint": "^9.13.0",
-    "typescript": "^5.6.3",
-    "ts-loader": "^9.5.1",
-    "webpack": "^5.95.0",
-    "webpack-cli": "^5.1.4",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.13.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.6.3",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "set-interval-async": "^3.0.3"
   }
 }
