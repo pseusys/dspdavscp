@@ -31,6 +31,7 @@ def postlog(log):
 # should be invoked when first enter page/ refresh page/ click the BUTTON!!!!!!!!!!!!!!!
 @app.route('/api/get_report', methods=['GET'])
 def get_report():
+    # calls the function in danalysis.py 
     # temparily here as a placeholder
     analysis_result = [{"hehe":1,"haha":2},{"hehe":1,"haha":2},{"hehe":1,"haha":2}]
     return jsonify(analysis_result)
