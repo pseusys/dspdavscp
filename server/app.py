@@ -16,11 +16,24 @@ def index():
 
 
 #======================= routing of the API endpoints ===============================
+'''
+log is a json string with the following data:
+{
+'email':email of the person,
+'details':{
+    'active_coding_time': the active coding time of user,
+    'run_time': time spend in running program in terminal,
+    'num_save': number of time the file is saved,
+    'terminal_response': track error,
+    'line_num_most_modify': line number most modifies (1/3 of the time modify this line)
+    }
+}
+'''
 @app.route('/api/postlog/<log>', methods=['POST'])
 def postlog(log):
     # get time server obtained the request
     timestamp = int(time.time()) # I DONT CARE THAT NORMALLY IT IS A FLOAT MAN NO NEED TO HAVE SECOND PRECISION MAN
-    data = (log['email'],timestamp,log['active_coding_time'],log['run_time'])
+    data = (log['email'],timestamp,log['active_coding_time'],log['run_time']) # << this need to check check
     # store to db
     db.dbinsert(data)
     return

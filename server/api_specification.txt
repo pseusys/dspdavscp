@@ -1,0 +1,18 @@
+this is the api specification
+the endpoints and the json string format to be parsed
+
+for the record:
+log is a json string with the following data:
+{
+    'email': email of the person,
+    'details': {
+        'file_name': file name,
+        'stats':{
+            'active_coding_time': the active coding time of user,
+            'run_time': time spend in running program in terminal,
+            'num_save': number of time the file is saved,
+            'error': [{line_num: the line number, 'error_details': the error that occured}],
+            'line_num_most_modify': line number most modifies (1/3 of the time modify this line)
+        }
+    }
+}
