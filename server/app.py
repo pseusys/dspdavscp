@@ -1,8 +1,8 @@
 import json
 from flask import Flask, jsonify, request
 from flask import render_template
-
-import sqlite3 as db
+import db_handler as db
+import time
 
 import danalysis as a
 
@@ -18,7 +18,12 @@ def index():
 #======================= routing of the API endpoints ===============================
 @app.route('/api/postlog/<log>', methods=['POST'])
 def postlog(log):
-    pass
+    # get time server obtained the request
+    timestamp = int(time.time()) # I DONT CARE THAT NORMALLY IT IS A FLOAT MAN NO NEED TO HAVE SECOND PRECISION MAN
+    data = (log['email'],timestamp,log['active_coding_time'],log['run_time'])
+    # store to db
+    db.dbinsert(data)
+    return
 
 
 @app.route('/api/get_report', methods=['GET'])
