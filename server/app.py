@@ -1,10 +1,11 @@
 import json
 from flask import Flask, jsonify, request
 from flask import render_template
-import db_handler as db
 import time
 
 import danalysis as a
+import db_handler as db
+import helper_function as h
 
 # start point of the app
 app = Flask(__name__)
@@ -21,7 +22,7 @@ def index():
 def postlog(log):
     # get time server obtained the request
     timestamp = int(time.time()) # I DONT CARE THAT NORMALLY IT IS A FLOAT MAN NO NEED TO HAVE SECOND PRECISION MAN
-    data = (log['email'],timestamp,log['active_coding_time'],log['run_time']) # << this need to check check
+    data = h.process(log,timestamp)
     # store to db
     db.dbinsert(data)
     return
