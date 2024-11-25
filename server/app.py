@@ -16,19 +16,7 @@ def index():
 
 
 #======================= routing of the API endpoints ===============================
-'''
-log is a json string with the following data:
-{
-'email':email of the person,
-'details':{
-    'active_coding_time': the active coding time of user,
-    'run_time': time spend in running program in terminal,
-    'num_save': number of time the file is saved,
-    'terminal_response': track error,
-    'line_num_most_modify': line number most modifies (1/3 of the time modify this line)
-    }
-}
-'''
+# posts the data into the db
 @app.route('/api/postlog/<log>', methods=['POST'])
 def postlog(log):
     # get time server obtained the request
@@ -39,6 +27,8 @@ def postlog(log):
     return
 
 
+# get the report
+# should be invoked when first enter page/ refresh page/ click the BUTTON!!!!!!!!!!!!!!!
 @app.route('/api/get_report', methods=['GET'])
 def get_report():
     # temparily here as a placeholder
