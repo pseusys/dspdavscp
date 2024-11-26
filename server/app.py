@@ -3,7 +3,6 @@ from flask import Flask, jsonify, request
 from flask import render_template
 import time
 
-import danalysis as a
 import db_handler as db
 
 # start point of the app
@@ -36,7 +35,7 @@ def report():
 def get_report():
     # calls the function in danalysis.py 
     # temparily here as a placeholder
-    analysis_result = db.dbfetchall()
+    analysis_result = db.analysis()
     # need to reform the format a bit
     return jsonify(analysis_result)
 
