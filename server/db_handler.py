@@ -1,7 +1,11 @@
+import numpy as np
+import pandas as pd
+import math as m
 import sqlite3
 import json
 
 
+# ==================================== DATABASE ============================================
 # initializes the database
 def db_init():
      conn = sqlite3.connect('records.db')
@@ -68,3 +72,18 @@ def dbfetchall():
      conn.close()
 
      return data
+
+
+#================================== the anaysis part ==================================
+def analysis():
+    # analysis of the data
+    # 1. general stat 
+    # >>> chart analysis, numerical
+    # 1a. average time spent on project
+    # 1b. average time code executed
+
+    # 2. details 
+    # 2a. ranking of student's hardworkingness
+    # 2b. top 10 most challenging lines of code
+    # 2c. top 5 most common error message received
+    return
