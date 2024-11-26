@@ -28,26 +28,26 @@ log is a json object
 e.g. http://127.0.0.1:5000/api/postlog/json_log
 PLEASE HAVE IT DDOUBLE QUOTED
 json_log = {
-    'email': 'hehehaha@mail.com',
-    'details': [
+    "email": "hehehaha@mail.com",
+    "details": [
         {
-            'file_name': function1.cpp,
-            'stats':{
-                'active_coding_time': 1000000,
-                'run_time': 100,
-                'num_save': 7,
-                'error': [{'line_num': 56, 'error_details': 'segmentation fault'}, {'line_num': 41, 'error_details': 'runtime error'}],
-                'line_num_most_modify': 55
+            "file_name": "function1.cpp",
+            "stats":{
+                "active_coding_time": 1000000,
+                "run_time": 100,
+                "num_save": 7,
+                "error": [{"line_num": 56, "error_details": "segmentation fault"}, {"line_num": 41, "error_details": "runtime error"}],
+                "line_num_most_modify": 55
             }
         },
         {
-            'file_name': function1.h,
-            'stats':{
-                'active_coding_time': 567,
-                'run_time': 0,
-                'num_save': 4,
-                'error': [null],
-                'line_num_most_modify': 25
+            "file_name": "function1.h",
+            "stats":{
+                "active_coding_time": 567,
+                "run_time": 0,
+                "num_save": 4,
+                "error": [null],
+                "line_num_most_modify": 25
             }
         }
     ]

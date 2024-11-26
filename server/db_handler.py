@@ -18,7 +18,11 @@ def db_create():
                          id INTEGER PRIMARY KEY,
                          email TEXT,
                          ts INTEGER,
-                         log_data TEXT
+                         files TEXT,
+                         code_time INTEGER,
+                         run_time INTEGER,
+                         save_num INTEGER,
+                         error_ourput TEXT,
                     )''') 
 
      conn.commit()
@@ -31,6 +35,7 @@ def db_create():
 data in the format of dictionary??????? since parse json
 '''
 def dbinsert(data,ts):
+     # check 
      conn, cursor = db_init()
 
      json_string = json.dumps(data)
@@ -39,7 +44,7 @@ def dbinsert(data,ts):
      conn.commit()
      cursor.close()
      conn.close()
-     return
+     return 1
 
 
 def dbfetch(email):

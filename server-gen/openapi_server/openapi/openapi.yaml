@@ -1,0 +1,108 @@
+openapi: 3.1.0
+info:
+  description: Distributed Similar Project Data Analysis Visual Studio Code Plugin
+  title: DSPDAVSCP
+  version: 0.0.1
+servers:
+- url: '...'
+paths:
+  /report:
+    post:
+      operationId: upload_report
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Report'
+        required: true
+      responses:
+        "200":
+          description: Upload success
+        "422":
+          description: Report malformed
+      summary: Upload a new report
+      x-openapi-router-controller: openapi_server.controllers.default_controller
+components:
+  schemas:
+    Report:
+      additionalProperties: false
+      example:
+        errorOutputs:
+        - errorOutputs
+        - errorOutputs
+        files:
+        - path: path
+          linesModified: "{}"
+          codeTime: 0
+          saveNumber: 6
+        - path: path
+          linesModified: "{}"
+          codeTime: 0
+          saveNumber: 6
+        codeTime: 1
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        runTime: 5
+        email: email
+        saveNumber: 5
+      minProperties: 7
+      properties:
+        id:
+          description: Report unique identifier
+          format: uuid
+          title: id
+          type: string
+        email:
+          description: Student email address
+          format: email
+          title: email
+          type: string
+        files:
+          description: Individual file reports
+          items:
+            $ref: '#/components/schemas/FileReport'
+          title: files
+          type: array
+        codeTime:
+          description: Total coding time in milliseconds
+          format: int64
+          title: codeTime
+          type: integer
+        runTime:
+          description: Total running time in milliseconds
+          format: int64
+          title: runTime
+          type: integer
+        saveNumber:
+          description: Total number of times a file was saved
+          format: int64
+          title: saveNumber
+          type: integer
+        errorOutputs:
+          description: Top most frequent error messages
+          items:
+            description: Error message
+            type: string
+          title: errorOutputs
+          type: array
+      title: Report
+    FileReport:
+      additionalProperties: {}
+      example:
+        path: path
+        linesModified: "{}"
+        codeTime: 0
+        saveNumber: 6
+      minProperties: 4
+      properties:
+        path:
+          description: Path to file relative to project root
+        codeTime:
+          description: Time spent coding this file in milliseconds
+          format: int64
+        saveNumber:
+          description: Total number of times this file was saved
+          format: int64
+        linesModified:
+          additionalProperties: false
+          maxProperties: 25
+      title: FileReport

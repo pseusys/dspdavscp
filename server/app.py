@@ -17,19 +17,22 @@ def index():
 
 #======================= routing of the API endpoints ===============================
 # posts the data into the db
-@app.route('/api/postlog', methods=['POST'])
-def postlog():
+@app.route('/report', methods=['POST'])
+def report():
     # get time server obtained the request
     ts = int(time.time()) # I DONT CARE THAT NORMALLY IT IS A FLOAT MAN NO NEED TO HAVE SECOND PRECISION MAN
     # store to db
     log_data = request.json
-    db.dbinsert(log_data,ts)
-    return '',201, {'msg': 'successfully sent to server.'}
+    flag = db.dbinsert(log_data,ts)
+    if flag:
+        return '',200, {'msg': 'Upload success'}
+    return '',422, {'msg': 'Report malformed'}
 
 
 # get the report
+# for testing
 # should be invoked when first enter page/ refresh page/ click the BUTTON!!!!!!!!!!!!!!!
-@app.route('/api/get_report', methods=['GET'])
+@app.route('/get_report', methods=['GET'])
 def get_report():
     # calls the function in danalysis.py 
     # temparily here as a placeholder
