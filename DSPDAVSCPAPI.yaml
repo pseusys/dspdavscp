@@ -1,0 +1,92 @@
+openapi: 3.1.0
+
+info:
+  title: DSPDAVSCP
+  description: Distributed Similar Project Data Analysis Visual Studio Code Plugin
+  version: 0.0.1
+
+servers:
+  - url: ...
+
+paths:
+  /report:
+    post:
+      summary: Upload a new report
+      operationId: uploadReport
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Report"
+        required: true
+      responses:
+        "200":
+          description: Upload success
+        "422":
+          description: Report malformed
+
+components:
+  schemas:
+    Report:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Report unique identifier
+        email:
+          type: string
+          format: email
+          description: Student email address
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/FileReport"
+          maxProperties: 25
+          description: Individual file reports
+        codeTime:
+          type: integer
+          format: int64
+          description: Total coding time in milliseconds
+        runTime:
+          type: integer
+          format: int64
+          description: Total running time in milliseconds
+        saveNumber:
+          type: integer
+          format: int64
+          description: Total number of times a file was saved
+        errorOutputs:
+          type: array
+          items:
+            type: string
+            description: Error message
+          maxProperties: 25
+          description: Top most frequent error messages
+      additionalProperties: false
+      minProperties: 7
+    FileReport:
+      type: object
+      properties:
+        path:
+          type: string
+          description: Path to file relative to project root
+        codeTime:
+          type: integer
+          format: int64
+          description: Time spent coding this file in milliseconds
+        saveNumber:
+          type: integer
+          format: int64
+          description: Total number of times this file was saved
+        linesModified:
+          type: object
+          patternProperties:
+            ^\d+$:
+              type: integer
+              format: int32
+              description: Line number mapped to modification times number
+          additionalProperties: false
+          maxProperties: 25
+      additionalProperties: false
+      minProperties: 4
