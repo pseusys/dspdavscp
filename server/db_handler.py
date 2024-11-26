@@ -38,4 +38,4 @@ def dbinsert(data):
      conn.commit()
      cursor.close()
      conn.close()
-     return 
+     return
