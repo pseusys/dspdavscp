@@ -1,3 +1,4 @@
 plugin/node_modules
 plugin/package-lock.json
 server/__pychache__
+server/record.db
