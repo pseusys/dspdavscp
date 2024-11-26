@@ -4,3 +4,6 @@ import math as m
 
 
 #================================== the anaysis part ==================================
+def analysis():
+    # analysis of the data
+    return
