@@ -5,7 +5,6 @@ import time
 
 import danalysis as a
 import db_handler as db
-import helper_function as h
 
 # start point of the app
 app = Flask(__name__)
@@ -18,14 +17,14 @@ def index():
 
 #======================= routing of the API endpoints ===============================
 # posts the data into the db
-@app.route('/api/postlog/<log>', methods=['POST'])
-def postlog(log):
+@app.route('/api/postlog', methods=['POST'])
+def postlog():
     # get time server obtained the request
-    timestamp = int(time.time()) # I DONT CARE THAT NORMALLY IT IS A FLOAT MAN NO NEED TO HAVE SECOND PRECISION MAN
-    data = h.process(log,timestamp)
+    ts = int(time.time()) # I DONT CARE THAT NORMALLY IT IS A FLOAT MAN NO NEED TO HAVE SECOND PRECISION MAN
     # store to db
-    db.dbinsert(data)
-    return
+    log_data = request.json
+    db.dbinsert(log_data,ts)
+    return '',201, {'msg': 'successfully sent to server.'}
 
 
 # get the report
@@ -34,11 +33,11 @@ def postlog(log):
 def get_report():
     # calls the function in danalysis.py 
     # temparily here as a placeholder
-    analysis_result = [{"hehe":1,"haha":2},{"hehe":1,"haha":2},{"hehe":1,"haha":2}]
+    analysis_result = db.dbfetchall()
     return jsonify(analysis_result)
 
 
 #=================================== RUN APP =========================================
+db.db_create()
 if __name__ == '__main__':
-    db.db_create()
     app.run(port=5000)

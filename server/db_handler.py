@@ -1,4 +1,5 @@
 import sqlite3
+import json
 
 
 # initializes the database
@@ -13,13 +14,12 @@ def db_create():
      conn, cursor = db_init()
 
      # create a table
-     cursor.execute('''CREATE TABLE IF NOT EXIST log (
+     cursor.execute('''CREATE TABLE IF NOT EXISTS log (
                          id INTEGER PRIMARY KEY,
                          email TEXT,
                          ts INTEGER,
-                         active_coding_time INTEGER,
-                         run_time INTEGER
-                    )''') # line differences, line num most modified
+                         log_data TEXT
+                    )''') 
 
      conn.commit()
      cursor.close()
@@ -30,12 +30,37 @@ def db_create():
 '''
 data in the format of dictionary??????? since parse json
 '''
-def dbinsert(data):
+def dbinsert(data,ts):
      conn, cursor = db_init()
 
-     cursor.executemany('INSERT INTO log (email,ts,active_coding_time,run_time) VALUES (?,?,?,?)', data)
-
+     json_string = json.dumps(data)
+     cursor.execute('INSERT INTO log (email,ts,log_data) VALUES (?,?,?)', (data['email'],ts,json_string))
+     
      conn.commit()
      cursor.close()
      conn.close()
      return
+
+
+def dbfetch(email):
+     conn, cursor = db_init()
+
+     cursor.execute('SELECT * FROM log WHERE email = ?', (email))
+     data = cursor.fetchall()
+
+     cursor.close()
+     conn.close()
+
+     return data
+
+
+def dbfetchall():
+     conn, cursor = db_init()
+
+     cursor.execute('SELECT * FROM log')
+     data = cursor.fetchall()
+
+     cursor.close()
+     conn.close()
+
+     return data

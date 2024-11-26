@@ -26,6 +26,7 @@ http://127.0.0.1:5000/api/postlog/<log>
 log is a json object
 
 e.g. http://127.0.0.1:5000/api/postlog/json_log
+PLEASE HAVE IT DDOUBLE QUOTED
 json_log = {
     'email': 'hehehaha@mail.com',
     'details': [
