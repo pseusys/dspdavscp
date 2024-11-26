@@ -22,33 +22,29 @@ the dashboard:
 http://127.0.0.1:5000/
 
 to pass data into server:
-http://127.0.0.1:5000/api/postlog/<log>
+http://127.0.0.1:5000/report/
 log is a json object
 
-e.g. http://127.0.0.1:5000/api/postlog/json_log
+e.g. http://127.0.0.1:5000/report/
 PLEASE HAVE IT DDOUBLE QUOTED
 json_log = {
     "email": "hehehaha@mail.com",
-    "details": [
+    "files": [
         {
-            "file_name": "function1.cpp",
-            "stats":{
-                "active_coding_time": 1000000,
-                "run_time": 100,
-                "num_save": 7,
-                "error": [{"line_num": 56, "error_details": "segmentation fault"}, {"line_num": 41, "error_details": "runtime error"}],
-                "line_num_most_modify": 55
-            }
+            "path": "function1.cpp",
+            "codeTime": 1000000,
+            "saveNumber": 100,
+            "linesModified": {"1":5,"6":4},
         },
         {
-            "file_name": "function1.h",
-            "stats":{
-                "active_coding_time": 567,
-                "run_time": 0,
-                "num_save": 4,
-                "error": [null],
-                "line_num_most_modify": 25
-            }
+            "path": "function2.cpp",
+            "codeTime": 10000,
+            "saveNumber": 7,
+            "linesModified": {"1":5,"6":4},
         }
-    ]
+    ],
+    "codeTime": 178878758,
+    "runTime": 6,
+    "saveNumber": 34,
+    "errorOutputs": ["Segmentation fault", "Runtime error"]
 }

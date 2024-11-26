@@ -20,7 +20,7 @@ def index():
 @app.route('/report', methods=['POST'])
 def report():
     # get time server obtained the request
-    ts = int(time.time()) # I DONT CARE THAT NORMALLY IT IS A FLOAT MAN NO NEED TO HAVE SECOND PRECISION MAN
+    ts = int(time.time()) 
     # store to db
     log_data = request.json
     flag = db.dbinsert(log_data,ts)
@@ -37,6 +37,7 @@ def get_report():
     # calls the function in danalysis.py 
     # temparily here as a placeholder
     analysis_result = db.dbfetchall()
+    # need to reform the format a bit
     return jsonify(analysis_result)
 
 

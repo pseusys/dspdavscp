@@ -22,7 +22,7 @@ def db_create():
                          code_time INTEGER,
                          run_time INTEGER,
                          save_num INTEGER,
-                         error_ourput TEXT,
+                         error_output TEXT
                     )''') 
 
      conn.commit()
@@ -38,8 +38,7 @@ def dbinsert(data,ts):
      # check 
      conn, cursor = db_init()
 
-     json_string = json.dumps(data)
-     cursor.execute('INSERT INTO log (email,ts,log_data) VALUES (?,?,?)', (data['email'],ts,json_string))
+     cursor.execute('INSERT INTO log (email,ts,files,code_time,run_time,save_num,error_output) VALUES (?,?,?,?,?,?,?)', (data['email'],ts,str(data["files"]),data['codeTime'],data['runTime'],data['saveNumber'],str(data['errorOutputs'])))
      
      conn.commit()
      cursor.close()
