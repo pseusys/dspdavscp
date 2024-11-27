@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
+    <link rel="stylesheet", href="../static/css/home.css">
 </head>
 
 <body>
-    <h1>ANALYSIS FOR CODE</h1>
-    <p>yes yes very important</p>
-    <p>figure out way to make report pretty</p>
+    <h1>ANALYSIS REPORT</h1>
+    <p>please refresh page for updating the staistcis</p>
     <div>
         <h2>Global statistic for task:</h2>
         <div>
@@ -22,7 +22,7 @@
     <div>
         <h2>Rankings:</h2>
         <div>
-            1. Ranking of hardworking students 
+            <h3>1. Ranking of hardworking students</h3>
             <div>
                 <table>
                     <thead>
@@ -45,7 +45,7 @@
             </div>
         </div>
         <div>
-            2. Top 10 lines of code that students struggles with:
+            <h3>2. Top 10 lines of code that students struggles with:</h3>
             <div>
                 <table>
                     <thead>
@@ -66,7 +66,7 @@
             </div>
         </div>
         <div>
-            3. Top 5 errors that students have when running the code:
+            <h3>3. Top 5 errors that students have when running the code:</h3>
             <div>
                 <table>
                     <thead>
@@ -79,7 +79,7 @@
                         {% for row in report["rank_error"] %}
                         <tr>
                             <td>{{loop.index}}</td>
-                            <td>{{row[0]}}</td>s
+                            <td>{{row[0]}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -87,7 +87,7 @@
             </div>
         </div>
         <div>
-            4. Top 3 most likely ctrl+c and ctrl+v abusers<br>
+            <h3>4. Top 3 most likely ctrl+c and ctrl+v abusers</h3>
             <div>
                 <table>
                     <thead>
