@@ -13,10 +13,12 @@ authors = [
 python = "^3.9"
 pandas = "^2.2.2"
 numpy = "^2.0.1"
+connexion = { version = "^2.14.2", extras = ["swagger-ui"] }
+openapi-server = { path = "serv", develop = false }
 
 [tool.poetry.group.dev.dependencies]
 openapi-generator-cli = "^4.3.1"
 
 
 [tool.poetry.scripts]
-prepare = 'my_package.console:run'
+prepare = "openapi-generator-cli generate -i ../DSPDAVSCPAPI.yaml -g python-flask -o serv"

@@ -1,11 +1,16 @@
-from flask import Flask, jsonify, request
-from flask import render_template, redirect, url_for
+from connexion import FlaskApp
+from serv.openapi_server import encoder
+from serv.openapi_server.models import Report
+
+from flask import jsonify, request
+from flask import render_template, redirect
 import time
 
 import db_handler as db
 
 # start point of the app
-app = Flask(__name__)
+app = FlaskApp(__name__, specification_dir="serv/openapi_server/openapi/")
+app.app.json_provider_class = encoder.JSONEncoder
 
 #============================= dashbaord route ======================================
 @app.route('/')
@@ -26,7 +31,7 @@ def change_cof():
 #======================= routing of the API endpoints ===============================
 # posts the data into the db
 @app.route('/report', methods=['POST'])
-def report():
+def report(report: Report):
     # get time server obtained the request
     ts = int(time.time()) 
     # store to db
@@ -36,6 +41,10 @@ def report():
         return '',200, {'msg': 'Upload success'}
     return '',422, {'msg': 'Report malformed'}
 
+
+@app.route("/healthcheck")
+def healthcheck():
+    return "", 200
 
 # get the report
 # for testing
@@ -51,5 +60,7 @@ def get_report():
 
 #=================================== RUN APP =========================================
 db.db_create()
+
+app.add_api("openapi.yaml", arguments={"title": "DSPDAVSCP"}, pythonic_params=True)
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
