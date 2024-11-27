@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "DSPDAVSCP"
+version = "0.0.1"
+description = "Distributed Similar Project Data Analysis Visual Studio Code Plugin"
+package-mode = false
+authors = [
+    "Aleksandr Sergeev <asergeev@connect.ust.hk>",
+    "...",
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pandas = "^2.2.2"
+numpy = "^2.0.1"
+
+[tool.poetry.group.dev.dependencies]
+openapi-generator-cli = "^4.3.1"
+
+
+[tool.poetry.scripts]
+prepare = 'my_package.console:run'
