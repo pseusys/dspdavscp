@@ -5,9 +5,9 @@ import * as vscode from "vscode";
 import { clearIntervalAsync, setIntervalAsync, SetIntervalAsyncTimer } from "set-interval-async";
 
 import { MetaReport } from "./report";
-import { createConfiguration, DefaultApi, ServerConfiguration } from "./cli";
+import { DefaultApi, ApiClient } from "./cli/src";
 
-const STUDENT_EMAIL_OPTION = "studentEmail";
+const USER_EMAIL_OPTION = "userEmail";
 const REMOTE_HOST_OPTION = "remoteHost";
 const REPORT_TIMER_OPTION = "reportTimer";
 const PROJECT_PATH_OPTION = "projectPath";
@@ -27,11 +27,13 @@ let reportTimeout: SetIntervalAsyncTimer<any>;
 let hostAccessible: boolean, pathsExist: boolean;
 
 export async function activate(context: vscode.ExtensionContext) {
-	settings = vscode.workspace.getConfiguration(EXTENSION_NAME);
-	apiInstance = new DefaultApi(createConfiguration(settings.get(REMOTE_HOST_OPTION)!));
+	console.log(`${EXTENSION_NAME} extension initialized!`);
+	settings = vscode.workspace.getConfiguration(EXTENSION_NAME, null);
+	apiInstance = new DefaultApi(new ApiClient(settings.get(REMOTE_HOST_OPTION)!));
 
-	report = new MetaReport(settings.get(STUDENT_EMAIL_OPTION)!);
+	report = new MetaReport(settings.get(USER_EMAIL_OPTION)!);
 	status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, STATUS_PRIORITY);
+	console.log("Status bar item initialized and should be visible by now!");
 	context.subscriptions.push(status);
 	status.show();
 
@@ -39,12 +41,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		const remoteHostChanged = event.affectsConfiguration(REMOTE_HOST_OPTION);
 		const reportTimerChanged = event.affectsConfiguration(REPORT_TIMER_OPTION);
 		const projectPathChanged = event.affectsConfiguration(PROJECT_PATH_OPTION);
-		const studentEmailChanged = event.affectsConfiguration(STUDENT_EMAIL_OPTION);
-		if (studentEmailChanged) report.email = settings.get(STUDENT_EMAIL_OPTION)!;
+		const userEmailChanged = event.affectsConfiguration(USER_EMAIL_OPTION);
+		if (userEmailChanged) setEmail(settings.get(USER_EMAIL_OPTION)!);
 		if (projectPathChanged) pathsExist = checkPathsExist(settings.get(PROJECT_PATH_OPTION)!);
 		if (remoteHostChanged) hostAccessible = await connectToHost(settings.get(REMOTE_HOST_OPTION)!);
 		if (reportTimerChanged || projectPathChanged) await setupTimer(settings.get(REPORT_TIMER_OPTION)!);
-		if (remoteHostChanged || projectPathChanged || studentEmailChanged) await sendReport();
+		if (remoteHostChanged || projectPathChanged || userEmailChanged) await sendReport();
 	});
 
 	vscode.workspace.onDidOpenTextDocument(event => onFileOpened(event.uri.fsPath, event.lineCount));
@@ -67,27 +69,45 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export async function deactivate() {
 	await sendReport();
+	console.log(`${EXTENSION_NAME} extension deactivated!`);
 }
 
 
 
+function setEmail(email: string) {
+	console.log(`User email changed to: ${email}`);
+	report.email = email;
+}
+
 async function connectToHost(host: string): Promise<boolean> {
-	apiInstance = new DefaultApi(createConfiguration({baseServer: new ServerConfiguration(host, {})}));
+	console.log(`Host address changed to: ${host}, performing healthcheck...`);
+	apiInstance = new DefaultApi(new ApiClient(host));
 	try {
 		await apiInstance.healthcheck();
+		console.log("Healthcheck successful!");
 		return true;
 	} catch (_) {
+		console.log("Healthcheck failed!");
 		return false;
 	}
 }
 
 async function setupTimer(nextIn: number) {
-	if (reportTimeout !== undefined) await clearIntervalAsync(reportTimeout);
-	if (pathsExist) reportTimeout = setIntervalAsync(sendReport, nextIn * 1000);
+	if (reportTimeout !== undefined) {
+		console.log("Clearing report timer...");
+		await clearIntervalAsync(reportTimeout);
+	} else console.log("No report running!");
+	if (pathsExist) {
+		console.log(`New report timer is every ${nextIn} seconds!`);
+		reportTimeout = setIntervalAsync(sendReport, nextIn * 1000);
+	} else console.log("Project path not found, timer will not be set!");
 }
 
 function checkPathsExist(paths: string[]): boolean {
-	return paths.every(path => existsSync(path));
+	console.log(`New project paths are: ${paths.join(" ")}, checking...`);
+	const exist = paths.every(path => existsSync(path));
+	console.log(exist ? "All the paths found!" : "Some of the paths do not exist!");
+	return exist;
 }
 
 
@@ -102,16 +122,19 @@ function getProjectSubpath(child: string): string | undefined {
 
 function onFileOpened(file: string, lineCount: number) {
 	const subpath = getProjectSubpath(file);
+	console.log(`File "${subpath}" opened!`);
 	if (subpath !== undefined) report.openFile(subpath, lineCount);
 }
 
 function onFileSaved(file: string, lineCount: number) {
 	const subpath = getProjectSubpath(file);
+	console.log(`File "${subpath}" saved!`);
 	if (subpath !== undefined) report.saveFile(subpath, lineCount);
 }
 
 function onTextFileChanged(file: string, lineCount: number, changes: readonly vscode.TextDocumentContentChangeEvent[]) {
 	const subpath = getProjectSubpath(file);
+	console.log(`File "${subpath}" changed, changes: ${changes.map(ch => { return { from: ch.range.start, to: ch.range.end}; }).join(" ")}!`);
 	if (subpath !== undefined) report.changeLines(subpath, lineCount, changes.flatMap(change => {
 		const lines = new Array(change.range.end.line - change.range.start.line);
 		for (let i = change.range.start.line; i <= change.range.end.line; i++) lines.push(i);
@@ -121,25 +144,30 @@ function onTextFileChanged(file: string, lineCount: number, changes: readonly vs
 
 function onNotebookFileChanged(file: string, cellCount: number, changes: readonly vscode.NotebookDocumentCellChange[]) {
 	const subpath = getProjectSubpath(file);
+	console.log(`File "${subpath}" changed, changes: ${changes.map(change => change.cell.index)}`);
 	if (subpath !== undefined) report.changeLines(subpath, cellCount, changes.map(change => change.cell.index));
 }
 
 function onFileClosed(file: string, lineCount: number) {
 	const subpath = getProjectSubpath(file);
+	console.log(`File "${subpath}" closed!`);
 	if (subpath !== undefined) report.closeFile(subpath, lineCount);
 }
 
 
 
 function reflectResult(message: string, result: boolean) {
+	console.log(message);
 	status.text = message;
 }
 
 async function sendReport(): Promise<void> {
-	if (!hostAccessible) return reflectResult("Could not reach DSPDAVSCP host!", false);
+	if (!hostAccessible) return reflectResult(`Could not reach DSPDAVSCP host ${settings.get(REMOTE_HOST_OPTION)!}!`, false);
 	else if (!pathsExist) return reflectResult("Could not access DSPDAVSCP projects!", false);
+	const normReport = report.normalize();
+	console.log(`Report to be sent: ${normReport}`);
 	try {
-		await apiInstance.report(report.normalize());
+		await apiInstance.report(report);
 		reflectResult("Report submitted successfully!", true);
 	} catch {
 		reflectResult("Report submission failure!", false);

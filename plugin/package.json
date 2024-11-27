@@ -23,7 +23,7 @@
     "configuration": {
       "title": "DSPDAVSCP",
       "properties": {
-        "dspdavscp.studentEmail": {
+        "dspdavscp.userEmail": {
           "type": "string",
           "scope": "user",
           "description": "DSPDAVSCP user email"
@@ -31,7 +31,7 @@
         "dspdavscp.remoteHost": {
           "type": "string",
           "scope": "machine",
-          "default": "",
+          "default": "http://localhost:35129",
           "description": "DSPDAVSCP remote host"
         },
         "dspdavscp.reportTimer": {
@@ -53,7 +53,7 @@
     }
   },
   "scripts": {
-    "prepare": "npx openapi-generator-cli generate -i ../DSPDAVSCPAPI.yaml -g typescript -o src/cli",
+    "prepare": "npx openapi-generator-cli generate -i ../DSPDAVSCPAPI.yaml -g javascript -o src/cli --additional-properties=usePromises=true",
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
     "watch": "webpack --watch",
@@ -80,6 +80,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "set-interval-async": "^3.0.3"
+    "set-interval-async": "^3.0.3",
+    "superagent": "^10.1.1"
   }
 }

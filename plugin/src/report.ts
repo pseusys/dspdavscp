@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { FileReport, Report } from "./cli";
+import { FileReport, Report } from "./cli/src";
 
 
 
@@ -87,11 +87,11 @@ export class MetaReport extends Report {
     }
 
     public normalize(): Report {
-        this.files = this.files!.sort((fr1, fr2) => {
-            const score1 = (fr1 as MetaFileReport).score(this.codeTime!, this.saveNumber!);
-            const score2 = (fr2 as MetaFileReport).score(this.codeTime!, this.saveNumber!);
+        this.files = this.files!.sort((fr1: MetaFileReport, fr2: MetaFileReport) => {
+            const score1 = fr1.score(this.codeTime!, this.saveNumber!);
+            const score2 = fr2.score(this.codeTime!, this.saveNumber!);
             return score2 - score1;
-        }).slice(0, MetaReport.MAX_FILES).map(fr => (fr as MetaFileReport).normalize());
+        }).slice(0, MetaReport.MAX_FILES).map((fr: MetaFileReport) => fr.normalize());
         return this;
     }
 
