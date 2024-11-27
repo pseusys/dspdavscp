@@ -2,6 +2,10 @@ import ast
 import numpy as np
 import sqlite3
 
+# global var for formula
+a = 1
+b = 1
+c = 1
 
 # ==================================== DATABASE ============================================
 # initializes the database
@@ -90,9 +94,9 @@ def analysis():
      # 2. details 
      # 2a. ranking of student's hardworkingness (or struggling)
      # default formula: (a)codeTime + (b)runTime + (c)totalLinesModified
-     a = 1
-     b = 1
-     c = 1
+     global a
+     global b
+     global c
      dataPT1 = cursor.execute('SELECT email, SUM(code_time), SUM(run_time) FROM log GROUP BY email').fetchall()
      # make this into a dict
      record = {}
@@ -150,3 +154,13 @@ def analysis():
 
      # form a more stuctured response
      return {'avg_coding_time':global_avg_time, "avg_run_time":global_run_time, "rank_hardworking":ranking_2a, "rank_challenging_lines":ranking_2b, "rank_error":ranking_2c, "rank_ctrlc_ctrlv":ranking_2d}
+
+
+def alterCoefficient(na,nb,nc):
+     global a
+     global b
+     global c
+     a = na
+     b = nb
+     c = nc
+     return

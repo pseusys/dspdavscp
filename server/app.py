@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from flask import render_template
+from flask import render_template, redirect, url_for
 import time
 
 import db_handler as db
@@ -12,6 +12,15 @@ app = Flask(__name__)
 def index():
     analysis_report = db.analysis()
     return render_template('home.html',report=analysis_report)
+
+
+@app.route('/cc', methods=['POST'])
+def change_cof():
+    a = request.form.get("a")
+    b = request.form.get("b")
+    c = request.form.get("c")
+    db.alterCoefficient(a,b,c)
+    return redirect('/')
 
 
 #======================= routing of the API endpoints ===============================
