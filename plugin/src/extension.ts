@@ -5,7 +5,7 @@ import * as vscode from "vscode";
 import { clearIntervalAsync, setIntervalAsync, SetIntervalAsyncTimer } from "set-interval-async";
 
 import { MetaReport } from "./report";
-import { Configuration, createConfiguration, DefaultApi, Report } from "./cli";
+import { createConfiguration, DefaultApi, ServerConfiguration } from "./cli";
 
 const STUDENT_EMAIL_OPTION = "studentEmail";
 const REMOTE_HOST_OPTION = "remoteHost";
@@ -17,10 +17,9 @@ const STATUS_PRIORITY = 100;
 
 
 
-let configuration: Configuration;
+let settings: vscode.WorkspaceConfiguration;
 let apiInstance: DefaultApi;
 
-let settings: vscode.WorkspaceConfiguration;
 let status: vscode.StatusBarItem;
 let report: MetaReport;
 
@@ -28,9 +27,8 @@ let reportTimeout: SetIntervalAsyncTimer<any>;
 let hostAccessible: boolean, pathsExist: boolean;
 
 export async function activate(context: vscode.ExtensionContext) {
-	configuration = createConfiguration();
-	apiInstance = new DefaultApi(configuration);
 	settings = vscode.workspace.getConfiguration(EXTENSION_NAME);
+	apiInstance = new DefaultApi(createConfiguration(settings.get(REMOTE_HOST_OPTION)!));
 
 	report = new MetaReport(settings.get(STUDENT_EMAIL_OPTION)!);
 	status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, STATUS_PRIORITY);
@@ -74,10 +72,10 @@ export async function deactivate() {
 
 
 async function connectToHost(host: string): Promise<boolean> {
+	apiInstance = new DefaultApi(createConfiguration({baseServer: new ServerConfiguration(host, {})}));
 	try {
-		const hostResponse = await fetch(host);
-		const responseText = await hostResponse.text();
-		return responseText === "healthy";
+		await apiInstance.healthcheck();
+		return true;
 	} catch (_) {
 		return false;
 	}
@@ -141,7 +139,7 @@ async function sendReport(): Promise<void> {
 	if (!hostAccessible) return reflectResult("Could not reach DSPDAVSCP host!", false);
 	else if (!pathsExist) return reflectResult("Could not access DSPDAVSCP projects!", false);
 	try {
-		await apiInstance.uploadReport(report.normalize());
+		await apiInstance.report(report.normalize());
 		reflectResult("Report submitted successfully!", true);
 	} catch {
 		reflectResult("Report submission failure!", false);
