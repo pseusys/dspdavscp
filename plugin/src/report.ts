@@ -1,65 +1,106 @@
-import { SortedTopQueue } from "./topqueue";
-
-type LinePointer = { f: string, l: number };
-type InstanceWithNumber<I> = { i: I, n: number };
+import { randomUUID } from "crypto";
+import { FileReport, Report } from "./cli";
 
 
 
-class ProjectFile {
-    public openTime: number = 0;
-    public saveCount: number = 0;
+class MetaFileReport extends FileReport {
+    private static MAX_LINES_MODIFIED = 25;
+
+    public lineCount: number;
     public lastOpenedAt: number | null = null;
-    public linesChanged: Map<number, number> = new Map();
+
+    constructor(path: string, lineCount: number) {
+        super();
+        this.path = path;
+        this.lineCount = lineCount;
+        this.codeTime = 0;
+        this.saveNumber = 0;
+        this.linesModified = Object();
+    }
+
+    public score(codeTime: number, saveNumber: number): number {
+        const lineScore = this.linesModified / this.lineCount;
+        const codeTimeScore = this.codeTime! / codeTime;
+        const saveNumberScore = this.saveNumber! / saveNumber;
+        return lineScore + codeTimeScore + saveNumberScore;
+    }
+
+    public normalize(): FileReport {
+        const linesModified = this.linesModified!;
+        this.linesModified = Object.keys(linesModified)
+            .map(Number)
+            .sort((k1, k2) => k2 - k1)
+            .slice(0, MetaFileReport.MAX_LINES_MODIFIED)
+            .reduce((obj, key) => {
+                obj[key] = this.linesModified![key] as number;
+                return obj;
+            }, Object());
+        return this;
+    }
 }
 
+export class MetaReport extends Report {
+    private static MAX_FILES = 25;
 
+    private fileData: Map<string, MetaFileReport> = new Map();
 
-export class Report {
-    private fileData: Map<string, ProjectFile> = new Map();
+    constructor(email: string, id: string | null = null) {
+        super();
+        this.purge(id);
+        this.email = email;
+    }
 
-    private getFileOrDefault(name: string): ProjectFile {
+    private getFileOrDefault(name: string, lineCount: number): MetaFileReport {
         if (this.fileData.has(name)) return this.fileData.get(name)!;
         else {
-            const newFile = new ProjectFile();
+            const newFile = new MetaFileReport(name, lineCount);
             this.fileData.set(name, newFile);
+            this.files!.push(newFile);
             return newFile;
         }
     }
 
-    public openFile(name: string) {
-        this.getFileOrDefault(name).lastOpenedAt = Date.now();
+    public openFile(name: string, lineCount: number) {
+        this.getFileOrDefault(name, lineCount).lastOpenedAt = Date.now();
     }
 
-    public closeFile(name: string) {
-        const fileData = this.getFileOrDefault(name);
-        if (fileData.lastOpenedAt !== null) fileData.openTime += (Date.now() - fileData.lastOpenedAt);
+    public closeFile(name: string, lineCount: number) {
+        const fileData = this.getFileOrDefault(name, lineCount);
+        if (fileData.lastOpenedAt !== null) {
+            const openTime = Date.now() - fileData.lastOpenedAt;
+            fileData.codeTime! += openTime;
+            this.codeTime! += openTime;
+        }
     }
 
-    public saveFile(name: string) {
-        this.getFileOrDefault(name).saveCount += 1;
+    public saveFile(name: string, lineCount: number) {
+        this.getFileOrDefault(name, lineCount).saveNumber! += 1;
+        this.saveNumber! += 1;
     }
 
-    public changeLines(name: string, lines: number[]) {
-        const fileData = this.getFileOrDefault(name);
+    public changeLines(name: string, lineCount: number, lines: number[]) {
+        const fileData = this.getFileOrDefault(name, lineCount);
         lines.forEach(line => {
-            const changeCount = fileData.linesChanged.get(line) ?? 0;
-            fileData.linesChanged.set(line, changeCount + 1);
+            const changeCount = fileData.linesModified[line] ?? 0;
+            fileData.linesModified[line] = changeCount + 1;
         });
     }
 
-    public purge(): Object {
-        const openTimes: SortedTopQueue<InstanceWithNumber<string>> = new SortedTopQueue(10, (a, b) => a.n - b.n);
-        const savedCounts: SortedTopQueue<InstanceWithNumber<string>> = new SortedTopQueue(10, (a, b) => a.n - b.n);
-        const linesChanged: SortedTopQueue<InstanceWithNumber<LinePointer>> = new SortedTopQueue(100, (a, b) => a.n - b.n);
-        this.fileData.forEach((file, name) => {
-            openTimes.push({ i: name, n: file.openTime });
-            savedCounts.push({ i: name, n: file.saveCount });
-            file.linesChanged.forEach((line, chgd) => linesChanged.push({ i: { f: name, l: line }, n: chgd }));
-        });
-        return {
-            openTimes: openTimes.toArray(),
-            savedCounts: savedCounts.toArray(),
-            linesChanged: linesChanged.toArray()
-        };
+    public normalize(): Report {
+        this.files = this.files!.sort((fr1, fr2) => {
+            const score1 = (fr1 as MetaFileReport).score(this.codeTime!, this.saveNumber!);
+            const score2 = (fr2 as MetaFileReport).score(this.codeTime!, this.saveNumber!);
+            return score2 - score1;
+        }).slice(0, MetaReport.MAX_FILES).map(fr => (fr as MetaFileReport).normalize());
+        return this;
+    }
+
+    public purge(newId: string | null = null) {
+        this.id = newId ?? randomUUID();
+        this.files = [];
+        this.codeTime = 0;
+        this.runTime = 0;
+        this.saveNumber = 0;
+        this.errorOutputs = [];
     }
 }

@@ -65,6 +65,7 @@ components:
           description: Top most frequent error messages
       additionalProperties: false
       minProperties: 7
+
     FileReport:
       type: object
       properties:

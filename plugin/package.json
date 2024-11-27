@@ -23,6 +23,11 @@
     "configuration": {
       "title": "DSPDAVSCP",
       "properties": {
+        "dspdavscp.studentEmail": {
+          "type": "string",
+          "scope": "user",
+          "description": "DSPDAVSCP user email"
+        },
         "dspdavscp.remoteHost": {
           "type": "string",
           "scope": "machine",
@@ -48,6 +53,7 @@
     }
   },
   "scripts": {
+    "prepare": "npx openapi-generator-cli generate -i ../DSPDAVSCPAPI.yaml -g typescript -o src/cli",
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
     "watch": "webpack --watch",
@@ -59,6 +65,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.15.3",
     "@types/mocha": "^10.0.9",
     "@types/node": "20.x",
     "@types/vscode": "^1.95.0",
