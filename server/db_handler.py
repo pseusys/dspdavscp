@@ -1,9 +1,6 @@
 import ast
 import numpy as np
-import pandas as pd
-import math as m
 import sqlite3
-import json
 
 
 # ==================================== DATABASE ============================================
