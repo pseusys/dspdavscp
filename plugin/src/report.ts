@@ -27,7 +27,7 @@ class MetaFileReport extends FileReport {
         return lineScore + codeTimeScore + saveNumberScore;
     }
 
-    public normalize(): FileReport {
+    public normalize(): MetaFileReport {
         const linesModified = this.linesModified!;
         this.linesModified = Object.keys(linesModified)
             .map(Number)
@@ -43,6 +43,8 @@ class MetaFileReport extends FileReport {
 
 export class MetaReport extends Report {
     private static MAX_FILES = 25;
+
+    'files'?: Array<MetaFileReport> = new Array();
 
     private fileData: Map<string, MetaFileReport> = new Map();
 
@@ -90,10 +92,10 @@ export class MetaReport extends Report {
 
     public normalize(): Report {
         this.files = this.files!.sort((fr1, fr2) => {
-            const score1 = (fr1 as MetaFileReport).score(this.codeTime!, this.saveNumber!);
-            const score2 = (fr2 as MetaFileReport).score(this.codeTime!, this.saveNumber!);
+            const score1 = fr1.score(this.codeTime!, this.saveNumber!);
+            const score2 = fr2.score(this.codeTime!, this.saveNumber!);
             return score2 - score1;
-        }).slice(0, MetaReport.MAX_FILES).map(fr => (fr as MetaFileReport).normalize());
+        }).slice(0, MetaReport.MAX_FILES).map(fr => fr.normalize());
         return this;
     }
 

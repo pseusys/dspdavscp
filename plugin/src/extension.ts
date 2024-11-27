@@ -96,7 +96,7 @@ async function setupTimer(nextIn: number) {
 	if (reportTimeout !== undefined) {
 		console.log("Clearing report timer...");
 		await clearIntervalAsync(reportTimeout);
-	} else console.log("No report running!");
+	} else console.log("No report timer running!");
 	if (pathsExist) {
 		console.log(`New report timer is every ${nextIn} seconds!`);
 		reportTimeout = setIntervalAsync(sendReport, nextIn * 1000);
@@ -105,7 +105,7 @@ async function setupTimer(nextIn: number) {
 
 function checkPathsExist(paths: string[]): boolean {
 	console.log(`New project paths are: ${paths.join(" ")}, checking...`);
-	const exist = paths.every(path => existsSync(path));
+	const exist = paths.length > 0 && paths.every(path => existsSync(path));
 	console.log(exist ? "All the paths found!" : "Some of the paths do not exist!");
 	return exist;
 }
@@ -165,7 +165,7 @@ async function sendReport(): Promise<void> {
 	if (!hostAccessible) return reflectResult(`Could not reach DSPDAVSCP host ${settings.get(REMOTE_HOST_OPTION)!}!`, false);
 	else if (!pathsExist) return reflectResult("Could not access DSPDAVSCP projects!", false);
 	const normReport = report.normalize();
-	console.log(`Report to be sent: ${normReport}`);
+	console.log(`Report to be sent: ${JSON.stringify(normReport)}`);
 	try {
 		await apiInstance.report(report);
 		reflectResult("Report submitted successfully!", true);
