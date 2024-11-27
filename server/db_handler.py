@@ -2,6 +2,8 @@ import ast
 import numpy as np
 import sqlite3
 
+from openapi_server.models.report import Report
+
 # global var for formula
 a = 1
 b = 1
@@ -40,11 +42,11 @@ def db_create():
 '''
 data in the format of dictionary??????? since parse json
 '''
-def dbinsert(data,ts):
+def dbinsert(data: Report, ts):
      # check 
      conn, cursor = db_init()
 
-     cursor.execute('INSERT INTO log (email,ts,files,code_time,run_time,save_num,error_output) VALUES (?,?,?,?,?,?,?)', (data['email'],ts,str(data["files"]),data['codeTime'],data['runTime'],data['saveNumber'],str(data['errorOutputs'])))
+     cursor.execute('INSERT INTO log (email,ts,files,code_time,run_time,save_num,error_output) VALUES (?,?,?,?,?,?,?)', (data.email, ts, str(data.files), data.code_time, data.run_time, data.save_number, str(data.error_outputs)))
      
      conn.commit()
      cursor.close()

@@ -10,6 +10,7 @@ paths:
     get:
       summary: Check whether server is online
       operationId: healthcheck
+      x-openapi-router-controller: api
       responses:
         "200":
           description: Upload success
@@ -20,7 +21,9 @@ paths:
     post:
       summary: Upload a new report
       operationId: report
+      x-openapi-router-controller: api
       requestBody:
+        x-body-name: report
         content:
           application/json:
             schema:
