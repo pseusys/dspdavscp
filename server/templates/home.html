@@ -9,6 +9,105 @@
     <h1>ANALYSIS FOR CODE</h1>
     <p>yes yes very important</p>
     <p>figure out way to make report pretty</p>
+    <div>
+        <h2>Global statistic for task:</h2>
+        <div>
+            1. Average coding time: {{report["avg_coding_time"]}} (ms)
+        </div>
+        <div>
+            2. Average run time across all projects: {{report["avg_run_time"]}} (ms)
+        </div>
+    </div>
+    <hr>
+    <div>
+        <h2>Rankings:</h2>
+        <div>
+            1. Ranking of hardworking students 
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ranking</th>
+                            <th>Email</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in report["rank_hardworking"] %}
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>{{row[0]}}</td>
+                            <td>{{row[1]}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div>
+            2. Top 10 lines of code that students struggles with:
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ranking</th>
+                            <th>File and Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in report["rank_challenging_lines"] %}
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>{{row[0]}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div>
+            3. Top 5 errors that students have when running the code:
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ranking</th>
+                            <th>Error</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in report["rank_error"] %}
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>{{row[0]}}</td>s
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div>
+            4. Top 3 most likely ctrl+c and ctrl+v abusers<br>
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ranking</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in report["rank_ctrlc_ctrlv"] %}
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>{{row[0]}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

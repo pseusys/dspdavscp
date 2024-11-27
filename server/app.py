@@ -11,7 +11,8 @@ app = Flask(__name__)
 #============================= dashbaord route ======================================
 @app.route('/')
 def index():
-    return render_template('home.html')
+    analysis_report = db.analysis()
+    return render_template('home.html',report=analysis_report)
 
 
 #======================= routing of the API endpoints ===============================
