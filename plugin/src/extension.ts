@@ -4,8 +4,8 @@ import { isAbsolute, relative } from "path";
 import * as vscode from "vscode";
 import { clearIntervalAsync, setIntervalAsync, SetIntervalAsyncTimer } from "set-interval-async";
 
+import { DefaultApi } from "openapi_client";
 import { MetaReport } from "./report";
-import { DefaultApi, ApiClient } from "./cli/src";
 
 const USER_EMAIL_OPTION = "userEmail";
 const REMOTE_HOST_OPTION = "remoteHost";
@@ -29,7 +29,7 @@ let hostAccessible: boolean, pathsExist: boolean;
 export async function activate(context: vscode.ExtensionContext) {
 	console.log(`${EXTENSION_NAME} extension initialized!`);
 	settings = vscode.workspace.getConfiguration(EXTENSION_NAME, null);
-	apiInstance = new DefaultApi(new ApiClient(settings.get(REMOTE_HOST_OPTION)!));
+	apiInstance = new DefaultApi(settings.get(REMOTE_HOST_OPTION)!);
 
 	report = new MetaReport(settings.get(USER_EMAIL_OPTION)!);
 	status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, STATUS_PRIORITY);
@@ -81,7 +81,7 @@ function setEmail(email: string) {
 
 async function connectToHost(host: string): Promise<boolean> {
 	console.log(`Host address changed to: ${host}, performing healthcheck...`);
-	apiInstance = new DefaultApi(new ApiClient(host));
+	apiInstance.basePath = host;
 	try {
 		await apiInstance.healthcheck();
 		console.log("Healthcheck successful!");

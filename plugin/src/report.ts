@@ -1,10 +1,12 @@
 import { randomUUID } from "crypto";
-import { FileReport, Report } from "./cli/src";
+import { FileReport, Report } from "openapi_client";
 
 
 
 class MetaFileReport extends FileReport {
     private static MAX_LINES_MODIFIED = 25;
+
+    'linesModified'?: { [key: number]: number } | undefined = undefined;
 
     public lineCount: number;
     public lastOpenedAt: number | null = null;
@@ -19,7 +21,7 @@ class MetaFileReport extends FileReport {
     }
 
     public score(codeTime: number, saveNumber: number): number {
-        const lineScore = this.linesModified / this.lineCount;
+        const lineScore = Object.keys(this.linesModified!).length / this.lineCount;
         const codeTimeScore = this.codeTime! / codeTime;
         const saveNumberScore = this.saveNumber! / saveNumber;
         return lineScore + codeTimeScore + saveNumberScore;
@@ -81,17 +83,17 @@ export class MetaReport extends Report {
     public changeLines(name: string, lineCount: number, lines: number[]) {
         const fileData = this.getFileOrDefault(name, lineCount);
         lines.forEach(line => {
-            const changeCount = fileData.linesModified[line] ?? 0;
-            fileData.linesModified[line] = changeCount + 1;
+            const changeCount = fileData.linesModified![line] ?? 0;
+            fileData.linesModified![line] = changeCount + 1;
         });
     }
 
     public normalize(): Report {
-        this.files = this.files!.sort((fr1: MetaFileReport, fr2: MetaFileReport) => {
-            const score1 = fr1.score(this.codeTime!, this.saveNumber!);
-            const score2 = fr2.score(this.codeTime!, this.saveNumber!);
+        this.files = this.files!.sort((fr1, fr2) => {
+            const score1 = (fr1 as MetaFileReport).score(this.codeTime!, this.saveNumber!);
+            const score2 = (fr2 as MetaFileReport).score(this.codeTime!, this.saveNumber!);
             return score2 - score1;
-        }).slice(0, MetaReport.MAX_FILES).map((fr: MetaFileReport) => fr.normalize());
+        }).slice(0, MetaReport.MAX_FILES).map(fr => (fr as MetaFileReport).normalize());
         return this;
     }
 

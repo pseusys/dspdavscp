@@ -53,7 +53,8 @@
     }
   },
   "scripts": {
-    "prepare": "npx openapi-generator-cli generate -i ../DSPDAVSCPAPI.yaml -g javascript -o src/cli --additional-properties=usePromises=true",
+    "build-cli": "cd cli && npm install && npm run build && cd .. && npm install --no-save ./cli",
+    "prepare": "npx openapi-generator-cli generate -i ../DSPDAVSCPAPI.yaml -g typescript-node -o cli --additional-properties=npmName=openapi_client,supportsES6=false && npm run build-cli",
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
     "watch": "webpack --watch",
@@ -80,7 +81,6 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "set-interval-async": "^3.0.3",
-    "superagent": "^10.1.1"
+    "set-interval-async": "^3.0.3"
   }
 }
