@@ -44,7 +44,7 @@ components:
         email:
           type: string
           format: email
-          description: Student email address
+          description: User email address
         files:
           type: array
           items:
