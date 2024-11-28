@@ -1,4 +1,7 @@
 plugin/node_modules
 plugin/package-lock.json
-server/__pychache__
-server/record.db
+
+server/serv
+server/records.db
+server/__pycache__
+server/poetry.lock

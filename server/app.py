@@ -1,11 +1,16 @@
-from flask import Flask, jsonify, request
-from flask import render_template, redirect, url_for, flash
-import time
+from connexion import FlaskApp
+from connexion.resolver import RelativeResolver
+
+from flask import jsonify, request
+from flask import render_template, redirect
+
+from serv.openapi_server.encoder import JSONEncoder
 
 import db_handler as db
 
 # start point of the app
-app = Flask(__name__)
+app = FlaskApp(__name__, specification_dir="serv/openapi_server/openapi/")
+app.app.json_provider_class = JSONEncoder
 
 #============================= dashbaord route ======================================
 @app.route('/')
@@ -22,20 +27,7 @@ def change_cof():
     db.alterCoefficient(a,b,c)
     return redirect(url_for('index'))
 
-
-#======================= routing of the API endpoints ===============================
-# posts the data into the db
-@app.route('/report', methods=['POST'])
-def report():
-    # get time server obtained the request
-    ts = int(time.time()) 
-    # store to db
-    log_data = request.json
-    flag = db.dbinsert(log_data,ts)
-    if flag:
-        return '',200, {'msg': 'Upload success'}
-    return '',422, {'msg': 'Report malformed'}
-
+#============================= smth else ======================================
 
 # get the report
 # for testing
@@ -51,5 +43,7 @@ def get_report():
 
 #=================================== RUN APP =========================================
 db.db_create()
+
+app.add_api("openapi.yaml", arguments={"title": "DSPDAVSCP"}, resolver=RelativeResolver("api"), pythonic_params=True, strict_validation=True, resolver_error=501)
 if __name__ == '__main__':
     app.run(port=5000, debug=True)

@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "DSPDAVSCP"
+version = "0.0.1"
+description = "Distributed Similar Project Data Analysis Visual Studio Code Plugin"
+package-mode = false
+authors = [
+    "Aleksandr Sergeev <asergeev@connect.ust.hk>",
+    "...",
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pandas = "^2.2.2"
+numpy = "^2.0.1"
+connexion = { version = "^2.14.2", extras = ["swagger-ui"] }
+
+[tool.poetry.group.dev.dependencies]
+openapi-generator-cli = "^4.3.1"
+poethepoet = { version = "^0.31.1", extras = ["poetry_plugin"] }
+
+
+[tool.poe.tasks]
+build-cli = "poetry run openapi-generator generate -i ../DSPDAVSCPAPI.yaml -g python-flask -o serv"
+install-cli = "poetry run pip install ./serv"
+prepare = ["build-cli", "install-cli"]
+run = "poetry run python3 app.py"
+
+[tool.poe.poetry_hooks]
+post_install = "prepare"
+
+
+[build-system]
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
