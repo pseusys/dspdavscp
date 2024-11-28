@@ -5,19 +5,19 @@ description = "Distributed Similar Project Data Analysis Visual Studio Code Plug
 package-mode = false
 authors = [
     "Aleksandr Sergeev <asergeev@connect.ust.hk>",
-    "...",
 ]
 
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pandas = "^2.2.2"
-numpy = "^2.0.1"
 connexion = { version = "^2.14.2", extras = ["swagger-ui"] }
+
+
+[tool.poetry.group.dev]
+optional = true
 
 [tool.poetry.group.dev.dependencies]
 openapi-generator-cli = "^4.3.1"
-poethepoet = { version = "^0.31.1", extras = ["poetry_plugin"] }
 
 
 [tool.poe.tasks]

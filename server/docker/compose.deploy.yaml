@@ -1,0 +1,11 @@
+services:
+  dspdavscp:
+    build:
+      dockerfile: server/docker/Dockerfile
+      context: ../..
+      target: deploy
+    ports:
+      - 80
+    environment:
+      DSPDAVSCP_PORT: 80
+      DSPDAVSCP_DEBUG: False

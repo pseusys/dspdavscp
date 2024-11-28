@@ -3,5 +3,5 @@ plugin/package-lock.json
 
 server/serv
 server/records.db
-server/__pycache__
+server/**/__pycache__
 server/poetry.lock

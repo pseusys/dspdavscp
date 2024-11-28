@@ -1,0 +1,11 @@
+services:
+  dspdavscp:
+    build:
+      dockerfile: server/docker/Dockerfile
+      context: ../..
+      target: debug
+    ports:
+      - 35129
+    environment:
+      DSPDAVSCP_PORT: 35129
+      DSPDAVSCP_DEBUG: True

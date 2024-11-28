@@ -1,49 +1,43 @@
+from os import getenv
+from time import time
+
 from connexion import FlaskApp
 from connexion.resolver import RelativeResolver
 
-from flask import jsonify, request
-from flask import render_template, redirect
-
 from serv.openapi_server.encoder import JSONEncoder
 
-import db_handler as db
+from src.admin import apply_rules
+from src.fixtures import generate_fixtures
+import src.db_handler as db
 
-# start point of the app
-app = FlaskApp(__name__, specification_dir="serv/openapi_server/openapi/")
+API_DIR = ".."
+DEFULT_DEBUG = True
+FIXTURES_NUMBER = 10
+PORT_NUMBER = 35129
+CLEAR_DATABASE = True
+
+
+# Flask app initialization
+
+app = FlaskApp(__name__, specification_dir=getenv("DSPDAVSCP_API", API_DIR))
 app.app.json_provider_class = JSONEncoder
 
-#============================= dashbaord route ======================================
-@app.route('/')
-def index():
-    analysis_report = db.analysis()
-    return render_template('home.html',report=analysis_report)
+
+# App settings
+
+apply_rules(app)
+app.add_api("DSPDAVSCPAPI.yaml", resolver=RelativeResolver("src.api"), pythonic_params=True, strict_validation=True, resolver_error=501)
+db.db_create(bool(getenv("DSPDAVSCP_CLEAR", f"{CLEAR_DATABASE}")))
 
 
-@app.route('/cc', methods=['POST'])
-def change_cof():
-    a = request.form.get("a")
-    b = request.form.get("b")
-    c = request.form.get("c")
-    db.alterCoefficient(a,b,c)
-    return redirect(url_for('index'))
+# Standalone running app
 
-#============================= smth else ======================================
+if __name__ == "__main__":
+    debug = bool(getenv("DSPDAVSCP_DEBUG", f"{DEFULT_DEBUG}"))
+    fixtures = int(getenv("DSPAVSCP_FIXTURES", f"{FIXTURES_NUMBER}"))
+    port = int(getenv("DSPDAVSCP_PORT", f"{PORT_NUMBER}"))
 
-# get the report
-# for testing
-# should be invoked when first enter page/ refresh page/ click the BUTTON!!!!!!!!!!!!!!!
-@app.route('/get_report', methods=['GET'])
-def get_report():
-    # calls the function in danalysis.py 
-    # temparily here as a placeholder
-    analysis_result = db.analysis()
-    # need to reform the format a bit
-    return jsonify(analysis_result)
+    for report in generate_fixtures(fixtures):
+        db.dbinsert(report, time())
 
-
-#=================================== RUN APP =========================================
-db.db_create()
-
-app.add_api("openapi.yaml", arguments={"title": "DSPDAVSCP"}, resolver=RelativeResolver("api"), pythonic_params=True, strict_validation=True, resolver_error=501)
-if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(port=port, debug=debug)

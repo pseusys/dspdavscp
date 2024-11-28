@@ -3,7 +3,7 @@ from typing import Dict
 
 from openapi_server.models.report import Report
 
-import db_handler as db
+import src.db_handler as db
 
 
 def healthcheck():
