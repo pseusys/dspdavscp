@@ -1,0 +1,38 @@
+name: PUBLISH
+
+on:
+  push:
+    #branches:
+    #  - 'main'
+    paths:
+      - 'plugin/**'
+      - 'DSPDAVSCPAPI.yaml'
+      - '.github/workflows/publish.yaml'
+
+concurrency:
+  group: REPORT-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  publish:
+    name: Publish extension
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Package VS Code extension
+      id: package
+      uses: nhedger/package-vscode-extension@v1
+      with:
+        extensionPath: plugin
+
+    - name: Update Release
+      uses: johnwbyrd/update-release@v1.0.0
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        release: Report release
+        files: ${{ steps.package.outputs.packagePath }}
