@@ -3,6 +3,7 @@
   "displayName": "DSPDAVSCP",
   "description": "Distributed Similar Project Data Analysis Visual Studio Code Plugin",
   "version": "0.0.1",
+  "repository": "https://github.com/pseusys/dspdavscp",
   "engines": {
     "vscode": "^1.95.0"
   },
