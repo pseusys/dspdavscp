@@ -46,13 +46,6 @@ jobs:
   publish-server:
     name: Build server container
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: Caerulean Whirlpool
-            root: caerulean/whirlpool
-            image: ghcr.io/${{ github.repository }}/caerulean-whirlpool
     permissions:
       contents: read
       packages: write
