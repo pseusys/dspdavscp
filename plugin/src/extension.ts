@@ -17,7 +17,6 @@ const STATUS_PRIORITY = 100;
 
 
 
-let settings: vscode.WorkspaceConfiguration;
 let apiInstance: DefaultApi;
 
 let status: vscode.StatusBarItem;
@@ -28,7 +27,7 @@ let hostAccessible: boolean, pathsExist: boolean;
 
 export async function activate(context: vscode.ExtensionContext) {
 	console.log(`${EXTENSION_NAME} extension initialized!`);
-	settings = vscode.workspace.getConfiguration(EXTENSION_NAME, null);
+	const settings = vscode.workspace.getConfiguration(EXTENSION_NAME, null);
 	apiInstance = new DefaultApi(settings.get(REMOTE_HOST_OPTION)!);
 
 	report = new MetaReport(settings.get(USER_EMAIL_OPTION)!);
@@ -37,13 +36,19 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(status);
 	status.show();
 
-	context.subscriptions.push(vscode.commands.registerCommand(`${EXTENSION_NAME}.report`, async () => await sendReport()));
+	vscode.commands.registerCommand(`${EXTENSION_NAME}.goToSettings`, () => vscode.commands.executeCommand("workbench.action.openSettings", EXTENSION_NAME));
+	context.subscriptions.push(vscode.commands.registerCommand(`${EXTENSION_NAME}.resetHost`, async () => await connectToHost(getSettingValue(REMOTE_HOST_OPTION)!)));
+	context.subscriptions.push(vscode.commands.registerCommand(`${EXTENSION_NAME}.resetPaths`, () => checkPathsExist(getSettingValue(PROJECT_PATH_OPTION)!)));
+	context.subscriptions.push(vscode.commands.registerCommand(`${EXTENSION_NAME}.resetTimer`, async () => await setupTimer(getSettingValue(REPORT_TIMER_OPTION)!)));
+	context.subscriptions.push(vscode.commands.registerCommand(`${EXTENSION_NAME}.resendReport`, async () => await sendReport()));
 
 	vscode.workspace.onDidChangeConfiguration(async event => {
-		const remoteHostChanged = event.affectsConfiguration(REMOTE_HOST_OPTION);
-		const reportTimerChanged = event.affectsConfiguration(REPORT_TIMER_OPTION);
-		const projectPathChanged = event.affectsConfiguration(PROJECT_PATH_OPTION);
-		const userEmailChanged = event.affectsConfiguration(USER_EMAIL_OPTION);
+		const settings = vscode.workspace.getConfiguration(EXTENSION_NAME, null);
+		const remoteHostChanged = event.affectsConfiguration(`${EXTENSION_NAME}.${REMOTE_HOST_OPTION}`);
+		const reportTimerChanged = event.affectsConfiguration(`${EXTENSION_NAME}.${REPORT_TIMER_OPTION}`);
+		const projectPathChanged = event.affectsConfiguration(`${EXTENSION_NAME}.${PROJECT_PATH_OPTION}`);
+		const userEmailChanged = event.affectsConfiguration(`${EXTENSION_NAME}.${USER_EMAIL_OPTION}`);
+		console.log(`Settings have been changed - host: ${remoteHostChanged}, timer: ${reportTimerChanged}, paths: ${projectPathChanged}, email: ${userEmailChanged}!`);
 		if (userEmailChanged) setEmail(settings.get(USER_EMAIL_OPTION)!);
 		if (projectPathChanged) pathsExist = checkPathsExist(settings.get(PROJECT_PATH_OPTION)!);
 		if (remoteHostChanged) hostAccessible = await connectToHost(settings.get(REMOTE_HOST_OPTION)!);
@@ -118,7 +123,7 @@ function checkPathsExist(paths: string[]): boolean {
 
 
 function getProjectSubpath(child: string): string | undefined {
-	const paths: string[] = settings.get(PROJECT_PATH_OPTION)!;
+	const paths: string[] = getSettingValue(PROJECT_PATH_OPTION)!;
 	return paths.map(path => {
 		const relativeChild = relative(path, child);
 		return (!relativeChild.startsWith("..") && !isAbsolute(relativeChild)) ? relativeChild : null;
@@ -139,7 +144,7 @@ function onFileSaved(file: string, lineCount: number) {
 
 function onTextFileChanged(file: string, lineCount: number, changes: readonly vscode.TextDocumentContentChangeEvent[]) {
 	const subpath = getProjectSubpath(file);
-	console.log(`File "${subpath}" changed, changes: ${changes.map(ch => { return { from: ch.range.start, to: ch.range.end}; }).join(" ")}!`);
+	console.log(`File "${subpath}" changed, changes: ${changes.map(ch => { return `{from: ${ch.range.start.line}, to: ${ch.range.end.line}}`; }).join(" ")}!`);
 	if (subpath !== undefined) report.changeLines(subpath, lineCount, changes.flatMap(change => {
 		const lines = new Array(change.range.end.line - change.range.start.line);
 		for (let i = change.range.start.line; i <= change.range.end.line; i++) lines.push(i);
@@ -174,10 +179,19 @@ async function onTerminalEnded(cmd: string, code: number | undefined) {
 function reflectResult(message: string, result: boolean) {
 	console.log(message);
 	status.text = message;
+	if (result === true) {
+		status.backgroundColor = undefined;
+		status.tooltip = new vscode.MarkdownString("Submit another report **right now**!");
+		status.command = `${EXTENSION_NAME}.resendReport`;
+	} else {
+		status.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
+		status.tooltip = "Go to the settings to fix the configuration issue!";
+		status.command = `${EXTENSION_NAME}.goToSettings`;
+	}
 }
 
 async function sendReport(): Promise<void> {
-	if (!hostAccessible) return reflectResult(`Could not reach DSPDAVSCP host ${settings.get(REMOTE_HOST_OPTION)!}!`, false);
+	if (!hostAccessible) return reflectResult(`Could not reach DSPDAVSCP host ${getSettingValue(REMOTE_HOST_OPTION)!}!`, false);
 	else if (!pathsExist) return reflectResult("Could not access DSPDAVSCP projects!", false);
 	const normReport = report.normalize();
 	console.log(`Report to be sent: ${JSON.stringify(normReport)}`);
@@ -189,4 +203,10 @@ async function sendReport(): Promise<void> {
 	} finally {
 		report.purge();
 	}
+}
+
+
+function getSettingValue<T>(setting: string): T {
+	const settings = vscode.workspace.getConfiguration(EXTENSION_NAME, null);
+	return settings.get(setting)!;
 }

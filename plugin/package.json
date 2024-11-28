@@ -16,8 +16,20 @@
   "contributes": {
     "commands": [
       {
-        "command": "dspdavscp.report",
-        "title": "Send Report"
+        "command": "dspdavscp.resetHost",
+        "title": "DSPDAVSCP: Reset Host"
+      },
+      {
+        "command": "dspdavscp.resetPaths",
+        "title": "DSPDAVSCP: Reset Paths"
+      },
+      {
+        "command": "dspdavscp.resetTimer",
+        "title": "DSPDAVSCP: Reset Timer"
+      },
+      {
+        "command": "dspdavscp.resendReport",
+        "title": "DSPDAVSCP: Resend Report"
       }
     ],
     "configuration": {
