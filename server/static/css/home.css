@@ -1,0 +1,30 @@
+body {
+    overflow: scroll;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: auto;
+    max-width: 500px;
+}
+
+.content {
+    max-width: 500px;
+    margin: auto;
+}
+
+table {
+    table-layout: auto;
+    border: 1px solid;
+    width: 100%;
+}
+
+th {
+    border: 1px solid;
+    text-align: center;
+}
+
+td {
+    text-align: center;
+}
+
+input {
+    width: 40px;
+}

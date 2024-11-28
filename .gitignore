@@ -1,6 +1,11 @@
 plugin/.vscode
 plugin/dist
+plugin/cli
 plugin/node_modules
 plugin/package-lock.json
 plugin/openapitools.json
-plugin/cli
+
+server/serv
+server/records.db
+server/**/__pycache__
+server/poetry.lock

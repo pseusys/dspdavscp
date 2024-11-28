@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet", href="../static/css/home.css">
+</head>
+
+<body>
+    <h1>ANALYSIS REPORT</h1>
+    <p>please refresh page for updating the staistcis</p>
+    <div>
+        <h2>Global statistic for task:</h2>
+        <div>
+            1. Average coding time: {{report["avg_coding_time"]}} (ms)
+        </div>
+        <div>
+            2. Average run time across all projects: {{report["avg_run_time"]}} (ms)
+        </div>
+    </div>
+    <hr>
+    <div>
+        <h2>Rankings:</h2>
+        <div>
+            <h3>1. Ranking of hardworking students</h3>
+            <div>
+                Formula: (a x code time) + (b x run time) + (c x lines modified) 
+            </div>
+            <div>
+                <form action="/cc", method="post">
+                    <div>
+                        <label for="a">weighting for coding time (a): </label>
+                        <input type="number" name="a" id="a" value=1>
+                    </div>
+                    <div>
+                        <label for="b">weighting for run time (b): </label>
+                        <input type="number" name="b" id="b" value=1>
+                    </div>
+                    <div>
+                        <label for="c">weighting for total number of lines modified (c): </label>
+                        <input type="number" name="c" id="c" value=1>
+                    </div>
+                    <button type="submit" value="Submit">Submit</button>
+                </form>
+            </div>
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ranking</th>
+                            <th>Email</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in report["rank_hardworking"] %}
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>{{row[0]}}</td>
+                            <td>{{row[1]}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div>
+            <h3>2. Top 10 lines of code that students struggles with:</h3>
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ranking</th>
+                            <th>File and Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in report["rank_challenging_lines"] %}
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>{{row[0]}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div>
+            <h3>3. Top 5 errors that students have when running the code:</h3>
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ranking</th>
+                            <th>Error</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in report["rank_error"] %}
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>{{row[0]}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div>
+            <h3>4. Top 3 most likely ctrl+c and ctrl+v abusers</h3>
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ranking</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in report["rank_ctrlc_ctrlv"] %}
+                        <tr>
+                            <td>{{loop.index}}</td>
+                            <td>{{row[0]}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
