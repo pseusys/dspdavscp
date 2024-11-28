@@ -41,5 +41,5 @@ jobs:
       uses: johnwbyrd/update-release@v1.0.0
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        release: Report release
+        release: VSIX package latest
         files: ${{ steps.package.outputs.packagePath }}
