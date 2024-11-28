@@ -37,6 +37,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(status);
 	status.show();
 
+	context.subscriptions.push(vscode.commands.registerCommand(`${EXTENSION_NAME}.report`, async () => await sendReport()));
+
 	vscode.workspace.onDidChangeConfiguration(async event => {
 		const remoteHostChanged = event.affectsConfiguration(REMOTE_HOST_OPTION);
 		const reportTimerChanged = event.affectsConfiguration(REPORT_TIMER_OPTION);
@@ -60,6 +62,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.workspace.onDidCloseTextDocument(event => onFileClosed(event.uri.fsPath, event.lineCount));
 	vscode.workspace.onDidCloseNotebookDocument(event => onFileClosed(event.uri.fsPath, event.cellCount));
+
+	vscode.window.onDidStartTerminalShellExecution(async event => await onTerminalStarted(event.execution.commandLine.value, event.execution.read()));
+	vscode.window.onDidEndTerminalShellExecution(async event => await onTerminalEnded(event.execution.commandLine.value, event.exitCode));
 
 	pathsExist = checkPathsExist(settings.get(PROJECT_PATH_OPTION)!);
 	hostAccessible = await connectToHost(settings.get(REMOTE_HOST_OPTION)!);
@@ -152,6 +157,16 @@ function onFileClosed(file: string, lineCount: number) {
 	const subpath = getProjectSubpath(file);
 	console.log(`File "${subpath}" closed!`);
 	if (subpath !== undefined) report.closeFile(subpath, lineCount);
+}
+
+async function onTerminalStarted(cmd: string, handle: AsyncIterable<string>) {
+	console.log(`Command "${cmd}" started!`);
+	report.startTerminal(handle);
+}
+
+async function onTerminalEnded(cmd: string, code: number | undefined) {
+	console.log(`Command "${cmd}" ended, code: ${code}!`);
+	await report.endTerminal(code);
 }
 
 

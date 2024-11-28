@@ -16,8 +16,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "dspdavscp.helloWorld",
-        "title": "Hello World"
+        "command": "dspdavscp.report",
+        "title": "Send Report"
       }
     ],
     "configuration": {
@@ -47,7 +47,9 @@
             "type": "string"
           },
           "scope": "resource",
-          "default": ["."],
+          "default": [
+            "."
+          ],
           "description": "Project source directories to track"
         }
       }
@@ -69,7 +71,7 @@
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.15.3",
     "@types/mocha": "^10.0.9",
-    "@types/node": "^22.10.0",
+    "@types/node": "^22.10.1",
     "@types/vscode": "^1.95.0",
     "@typescript-eslint/eslint-plugin": "^8.10.0",
     "@typescript-eslint/parser": "^8.7.0",
@@ -82,6 +84,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "fastest-levenshtein": "^1.0.16",
     "set-interval-async": "^3.0.3"
   }
 }
