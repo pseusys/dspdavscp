@@ -141,7 +141,7 @@ def analysis():
           record[email][2] += count
      
      for email, data in record.items():
-          ranking[email] = a*data[0] + b*data[1] + c*data[2]
+          ranking[email] = a*data[0]/1000 + b*data[1]/1000 + c*data[2]
      
      ranking_2a = sorted(ranking.items(), key=lambda x: x[1], reverse=True)
 

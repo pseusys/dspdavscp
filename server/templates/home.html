@@ -24,17 +24,20 @@
         <div>
             <h3>1. Ranking of hardworking students</h3>
             <div>
+                Formula: (a x code time) + (b x run time) + (c x lines modified) 
+            </div>
+            <div>
                 <form action="/cc", method="post">
                     <div>
-                        <label for="a">weighting for coding time</label>
+                        <label for="a">weighting for coding time (a): </label>
                         <input type="number" name="a" id="a" value=1>
                     </div>
                     <div>
-                        <label for="b">weighting for run time</label>
+                        <label for="b">weighting for run time (b): </label>
                         <input type="number" name="b" id="b" value=1>
                     </div>
                     <div>
-                        <label for="c">weighting for total number of lines modified</label>
+                        <label for="c">weighting for total number of lines modified (c): </label>
                         <input type="number" name="c" id="c" value=1>
                     </div>
                     <button type="submit" value="Submit">Submit</button>
