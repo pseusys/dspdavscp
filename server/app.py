@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, flash
 import time
 
 import db_handler as db
@@ -20,7 +20,7 @@ def change_cof():
     b = request.form.get("b")
     c = request.form.get("c")
     db.alterCoefficient(a,b,c)
-    return redirect('/')
+    return redirect(url_for('index'))
 
 
 #======================= routing of the API endpoints ===============================

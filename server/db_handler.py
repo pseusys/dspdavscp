@@ -32,6 +32,22 @@ def db_create():
                     )''') 
 
      conn.commit()
+
+     # create a table
+     cursor.execute('''CREATE TABLE IF NOT EXISTS temp (
+                         id INTEGER PRIMARY KEY,
+                         a INTEGER,
+                         b INTEGER,
+                         c INTEGER
+                    )''') 
+     conn.commit()
+
+     cursor.execute("DELETE FROM temp")
+     conn.commit()
+
+     cursor.execute('INSERT INTO temp (a,b,c) VALUES (?,?,?)', (1,1,1))
+     conn.commit()
+
      cursor.close()
      conn.close()
 
@@ -76,6 +92,18 @@ def dbfetchall():
      return data
 
 
+def fetchabc():
+     conn, cursor = db_init()
+
+     cursor.execute('SELECT * FROM temp')
+     abc = cursor.fetchall()
+
+     cursor.close()
+     conn.close()
+
+     return abc[0][0], abc[0][1], abc[0][2]
+
+
 #================================== the anaysis part ==================================
 def analysis():
      # connect to db
@@ -94,9 +122,8 @@ def analysis():
      # 2. details 
      # 2a. ranking of student's hardworkingness (or struggling)
      # default formula: (a)codeTime + (b)runTime + (c)totalLinesModified
-     global a
-     global b
-     global c
+     a, b, c = fetchabc()
+     # a,b,c = (1,1,1)
      dataPT1 = cursor.execute('SELECT email, SUM(code_time), SUM(run_time) FROM log GROUP BY email').fetchall()
      # make this into a dict
      record = {}
@@ -152,15 +179,17 @@ def analysis():
      # intuitive thinking >> less time spent per line aka short time big mod = more ctrl c ctrl v
      ranking_2d = sorted(ranking_temp.items(), key=lambda x: x[1])[:3]
 
+     cursor.close()
+     conn.close()
      # form a more stuctured response
      return {'avg_coding_time':global_avg_time, "avg_run_time":global_run_time, "rank_hardworking":ranking_2a, "rank_challenging_lines":ranking_2b, "rank_error":ranking_2c, "rank_ctrlc_ctrlv":ranking_2d}
 
 
 def alterCoefficient(na,nb,nc):
-     global a
-     global b
-     global c
-     a = na
-     b = nb
-     c = nc
+     conn, cursor = db_init()
+
+     cursor.execute('UPDATE temp SET a = ?, b = ?, c = ? ',(na,nb,nc))
+     conn.commit()
+     cursor.close()
+     conn.close()
      return
