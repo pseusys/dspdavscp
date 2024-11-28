@@ -1,0 +1,5 @@
+server/serv
+server/docker
+server/records.db
+server/**/__pycache__
+server/poetry.lock

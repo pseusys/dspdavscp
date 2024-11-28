@@ -10,7 +10,7 @@ def healthcheck():
     return "", 200
 
 
-def report(report: Dict):
-    if db.dbinsert(Report.from_dict(report), time()):
+def report(body: Dict):
+    if db.dbinsert(Report.from_dict(body), time()):
         return "Upload success", 200
     return "Report malformed", 422

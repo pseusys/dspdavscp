@@ -1,4 +1,4 @@
-from os import remove
+from pathlib import Path
 import sqlite3
 
 from openapi_server.models.report import Report
@@ -14,7 +14,7 @@ def db_init():
 # this creates the table
 def db_create(drop: bool = False):
      if drop:
-          remove("records.db")
+          Path("records.db").unlink(True)
      conn, cursor = db_init()
 
      # create a table

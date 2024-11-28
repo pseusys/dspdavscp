@@ -11,11 +11,11 @@ def analysis():
     # >>> chart analysis, numerical
     # 1a. average time spent on project
     data = [p[0] for p in cursor.execute('SELECT code_time FROM log').fetchall()]
-    global_avg_time = sum(data) / len(data)
+    global_avg_time = (sum(data) / len(data)) if len(data) > 0 else 0
 
     # 1b. average time code executed
     data = [p[0] for p in cursor.execute('SELECT run_time FROM log').fetchall()]
-    global_run_time = sum(data) / len(data)
+    global_run_time = (sum(data) / len(data)) if len(data) > 0 else 0
 
     # 2. details 
     # 2a. ranking of student's hardworkingness (or struggling)

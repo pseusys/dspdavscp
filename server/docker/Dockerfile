@@ -21,12 +21,12 @@ RUN poetry install --no-plugins --with dev
 
 FROM build AS debug
 
-ENV API_DIR=.
+ENV DSPDAVSCP_API=.
 
 COPY --from=generator /local/serv ./serv
 RUN poetry poe install-cli
 
-COPY server/src server/static server/templates server/app.py DSPDAVSCPAPI.yaml ./
+COPY server DSPDAVSCPAPI.yaml ./
 
 ENTRYPOINT poetry poe run
 
@@ -35,7 +35,7 @@ ENTRYPOINT poetry poe run
 FROM python:3.13-alpine AS deploy
 
 WORKDIR /dspdavscp/server
-ENV API_DIR=.
+ENV DSPDAVSCP_API=.
 
 RUN pip3 install gunicorn
 
@@ -45,6 +45,6 @@ RUN pip3 install -r requirements.txt
 COPY --from=generator /local/serv ./serv
 RUN pip3 install ./serv
 
-COPY server/src server/static server/templates server/app.py DSPDAVSCPAPI.yaml ./
+COPY server DSPDAVSCPAPI.yaml ./
 
 ENTRYPOINT gunicorn --bind localhost:${DSPDAVSCP_PORT} app:app
