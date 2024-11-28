@@ -1,5 +1,9 @@
+plugin/.vscode
+plugin/dist
+plugin/cli
 plugin/node_modules
 plugin/package-lock.json
+plugin/openapitools.json
 
 server/serv
 server/records.db
