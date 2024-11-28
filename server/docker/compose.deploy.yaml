@@ -1,5 +1,6 @@
 services:
   dspdavscp:
+    image: ghcr.io/dspdavscp/dspdavscp-server
     build:
       dockerfile: server/docker/Dockerfile
       context: ../..
