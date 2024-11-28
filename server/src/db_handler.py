@@ -4,7 +4,6 @@ import sqlite3
 from openapi_server.models.report import Report
 
 
-# ==================================== DATABASE ============================================
 # initializes the database
 def db_init():
      conn = sqlite3.connect('records.db')
