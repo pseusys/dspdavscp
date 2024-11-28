@@ -1,2 +1,6 @@
+plugin/.vscode
+plugin/dist
 plugin/node_modules
 plugin/package-lock.json
+plugin/openapitools.json
+plugin/cli
