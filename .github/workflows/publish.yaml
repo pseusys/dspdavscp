@@ -28,6 +28,9 @@ jobs:
       working-directory: plugin
       run: npm install
 
+    - name: Copy README
+      run: cp README.md plugin/README.md
+
     - name: Package VS Code extension
       id: package
       uses: nhedger/package-vscode-extension@v1
