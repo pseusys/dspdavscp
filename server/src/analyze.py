@@ -19,7 +19,7 @@ def analysis():
 
     # 2. details 
     # 2a. ranking of student's hardworkingness (or struggling)
-    # default formula: (a)codeTime + (b)runTime + (c)totalLinesModified
+    # default formula: ((a)codeTime + (b)runTime)totalLinesModified^c/1000
     a, b, c = fetchabc()
     # a,b,c = (1,1,1)
     dataPT1 = cursor.execute('SELECT email, SUM(code_time), SUM(run_time) FROM log GROUP BY email').fetchall()
@@ -39,7 +39,7 @@ def analysis():
         record[email][2] += count
      
     for email, data in record.items():
-        ranking[email] = a*data[0]/1000 + b*data[1]/1000 + c*data[2]
+        ranking[email] = (a*data[0] + b*data[1])*data[2]**c/1000
      
     ranking_2a = sorted(ranking.items(), key=lambda x: x[1], reverse=True)
 
