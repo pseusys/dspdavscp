@@ -70,7 +70,7 @@ def analysis():
     ranking_2c = sorted(error_count.items(), key=lambda x: x[1], reverse=True)[:5]
 
     # 2d. top 3 ctrl+c ctrl+v warrior suspects
-    # formula: totalLinesModified/(codeTime*100) << intuitive thought : how many time per lines spent
+    # formula: (codeTime)/totalLinesModified << intuitive thought : how many time per lines spent
     ranking_temp = {}
     for email, data in record.items():
         ranking_temp[email] = (data[0]/10000)/data[2]
