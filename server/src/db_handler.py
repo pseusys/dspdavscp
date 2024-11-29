@@ -43,7 +43,7 @@ def db_create(drop: bool = False):
      cursor.execute("DELETE FROM temp")
      conn.commit()
 
-     cursor.execute('INSERT INTO temp (a,b,c) VALUES (?,?,?)', (1,1,1))
+     cursor.execute('INSERT INTO temp (a,b,c) VALUES (?,?,?)', (1,1,2))
      conn.commit()
 
      cursor.close()
