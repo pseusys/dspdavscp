@@ -8,6 +8,7 @@ ASSUMPTIONS:
 1. no fancy extensions to run the code, all code is run on integrated terminal only
 2. DO NOT CHANGE FILE NAME aka file name is consistent for all students 
 
+design:
 What kind of data (json) to transmit from extension to server?
 * email of the student
 * file name
